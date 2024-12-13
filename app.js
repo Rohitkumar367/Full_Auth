@@ -11,6 +11,7 @@ app.use(express.json()) // resposible for converting the data into json format d
 import cors from 'cors';
 app.use(cors()) //This allows your backend to handle requests from a different origin (e.g., a React front end running on a different server).
 
+
 // imported connectDB function for the database connectivity
 import connectDB from './config/connectdb.js'
 const DATABASE_URL = process.env.DATABASE_URL;
