@@ -1,0 +1,47 @@
+# Node.js dependencies
+node_modules/
+
+# Environment variables
+.env
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependency directories
+bower_components/
+
+# Build outputs
+dist/
+build/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# IDE/Editor-specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Cache files
+.cache/
+.nyc_output/
+coverage/
+
+# Debugging files
+debug/
+*.pid
+*.seed
+*.pid.lock
+
+# Miscellaneous
+*.bak
+*.tmp
+
+# Ignore any specific upload directories (if applicable)
+uploads/
