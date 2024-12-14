@@ -17,10 +17,11 @@ import connectDB from './config/connectdb.js'
 const DATABASE_URL = process.env.DATABASE_URL;
 connectDB(DATABASE_URL); // database connection
 
-
-// retrienvs the value of the PORT environment variable which was loaded using dotenv.config() earlier
+// retrieves the value of the PORT environment variable which was loaded using dotenv.config() earlier
 const port = process.env.PORT
 
+import userRoutes from './routes/userRoutes.js'
+app.use("/api/user", userRoutes) // load routes 
 
 
 app.listen(port, ()=>{
