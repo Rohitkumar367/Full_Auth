@@ -2,6 +2,8 @@
 import UserModel from "../models/User.js";
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv'
+dotenv.config()
 
 class UserContoller {
     static userRegistration = async (req, res) => {
@@ -28,10 +30,14 @@ class UserContoller {
                             password: hashPassword,
                             tc: tc
                         })
-    
-                        await doc.save();
 
-                        res.status(201).send({ "status": "success", "message": "Registered Successfully"})
+                        await doc.save();
+  
+                        // creating jwt token
+                        const saved_user = await UserModel.findOne({email:email});
+                        const token = jwt.sign({userID: saved_user._id}, process.env.JWT_SECRET_KEY, {expiresIn: '5d'})
+
+                        res.status(201).send({ "status": "success", "message": "Registered Successfully", "token": token})
     
                     } catch (error) {
                         res.send({ "status": "failed", "message": "Unable to Register"})
@@ -59,7 +65,10 @@ class UserContoller {
                     const isMatch = await bcrypt.compare(password, user.password);
                     if((user.email === email) && isMatch)
                     {
-                        res.send({ "status": "success", "message": "Login Success"})
+                        // creating jwt token
+                        const token = jwt.sign({userID: user._id}, process.env.JWT_SECRET_KEY, {expiresIn: '5d'})
+
+                        res.send({ "status": "success", "message": "Login Success", "token": token})
                     }else{
                         res.send({ "status": "failed", "message": "Email or Password doestn't Match..."})
                     }
@@ -74,6 +83,29 @@ class UserContoller {
         } catch (error) {
             res.send({ "status": "failed", "message": "Unable to Login"})
         }
+    }
+    
+    static changeUserPassword = async (req, res) => {
+        const {password, password_confirmation} = req.body;
+        
+        if(password && password_confirmation)
+        {
+            if(password === password_confirmation)
+            {
+                const salt = await bcrypt.genSalt(10);
+                const hashPassword = await bcrypt.hash(password, salt);
+                res.send({ "status": "success", "message": "Password changed successfully"})
+            }
+            else
+            {
+                res.send({ "status": "failed", "message": "Password and Confirm password doesn't match."})
+            }
+        }
+        else
+        {    
+            res.send({ "status": "failed", "message": "All Fields are Required"})
+        }
+
     }
 }
 
