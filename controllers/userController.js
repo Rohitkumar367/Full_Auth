@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
 dotenv.config()
 
-class UserContoller {
+class UserController {
     static userRegistration = async (req, res) => {
         const { name, email, password, password_confirmation, tc } = req.body;
 
@@ -29,12 +29,14 @@ class UserContoller {
                             email: email,
                             password: hashPassword,
                             tc: tc
-                        })
+                        })          
 
                         await doc.save();
   
                         // creating jwt token
-                        const saved_user = await UserModel.findOne({email:email});
+                        const saved_user = await UserModel.findOne({email:email}); // first fetching user, for which we have to generate token
+
+                        // and then generating token
                         const token = jwt.sign({userID: saved_user._id}, process.env.JWT_SECRET_KEY, {expiresIn: '5d'})
 
                         res.status(201).send({ "status": "success", "message": "Registered Successfully", "token": token})
@@ -65,7 +67,7 @@ class UserContoller {
                     const isMatch = await bcrypt.compare(password, user.password);
                     if((user.email === email) && isMatch)
                     {
-                        // creating jwt token
+                        // generating jwt token
                         const token = jwt.sign({userID: user._id}, process.env.JWT_SECRET_KEY, {expiresIn: '5d'})
 
                         res.send({ "status": "success", "message": "Login Success", "token": token})
@@ -109,5 +111,5 @@ class UserContoller {
     }
 }
 
-export default UserContoller;
+export default UserController;
 

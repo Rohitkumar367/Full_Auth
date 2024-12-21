@@ -1,18 +1,20 @@
 
+import UserController from '../controllers/userController.js'
+import checkUserAuth from '../middlewares/auth-middleware.js'
 import express from 'express'
 const router = express.Router()
 
-import UserContoller from '../controllers/userController.js'
-import checkUserAuth from '../middlewares/auth-middleware.js'
 
-// route leve middleware
+// route level middleware
 router.use('/changepassword', checkUserAuth)
 
+
 // public routes 
-router.post('/register', UserContoller.userRegistration);
-router.post('/login', UserContoller.userLogin);
+router.post('/register', UserController.userRegistration);
+router.post('/login', UserController.userLogin);
+
 
 // protected routes
-router.post('/changepassword', UserContoller.changeUserPassword);
+router.post('/changepassword', UserController.changeUserPassword);
 
 export default router;
