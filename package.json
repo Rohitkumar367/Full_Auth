@@ -1,10 +1,10 @@
 {
   "name": "full_auth",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "backend/index.js",
   "scripts": {
     "start": "node app",
-    "dev": "nodemon app"
+    "dev": "nodemon backend/index.js"
   },
   "keywords": [],
   "author": "",
