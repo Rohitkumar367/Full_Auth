@@ -9,7 +9,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(express.json());// global middleware
-app.use("/api/auth", authRoutes);// middleware on the path-> /api/auth
+app.use("/api/auth", authRoutes);// middleware handler on the path-> /api/auth
 
 app.listen(PORT, ()=>{
     connectDB();
