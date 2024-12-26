@@ -8,7 +8,7 @@ export const generateTokenAndSetCookie = (res, userId, userName) => {
         expiresIn: "7d"
     })
 
-    //Token is passed via a cookie
+    //Token is stored in cookie
     res.cookie("token", token, {
         httpOnly: true, // so that cookie cannot be accessed by client side js
         secure: process.env.NODE_ENV === "production",

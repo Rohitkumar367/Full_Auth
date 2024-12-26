@@ -3,7 +3,7 @@
 import UserModel from "../models/userModel.js";
 import bcryptjs from 'bcryptjs'
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
-import { sendVerificationEmail, sendWelcomeEmail } from "../mailtrap/emails.js";
+import { sendVerificationEmail, sendWelcomeEmail } from "../nodemailer/emails.js";
 
 
 export const signup = async (req, res) => {
