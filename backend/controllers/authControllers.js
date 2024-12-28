@@ -40,6 +40,7 @@ export const signup = async (req, res) => {
         // mail verification code sending
         await sendVerificationEmail(user.email, verificationToken);
 
+        // send data to the client
         res.status(201).json({
             success: true,
             message: 'User created successfully',
@@ -77,6 +78,7 @@ export const verifyEmail = async (req, res) => {
         // after code verification sending a welcome email to the user
         await sendWelcomeEmail(user.email, user.name);
 
+        // send data to client
         res.status(200).json({
             success: true,
             message: "Email verified successfully",
