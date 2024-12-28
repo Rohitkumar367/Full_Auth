@@ -2,9 +2,11 @@
 
 import UserModel from "../models/userModel.js";
 import bcryptjs from 'bcryptjs'
+import crypto from 'crypto'
+import dotenv from 'dotenv'
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
-import { sendVerificationEmail, sendWelcomeEmail } from "../nodemailer/emails.js";
-
+import { sendPasswordResetEmail, sendVerificationEmail, sendWelcomeEmail } from "../nodemailer/emails.js";
+dotenv.config();
 
 export const signup = async (req, res) => {
     const {email, password, name} = req.body;
@@ -20,6 +22,7 @@ export const signup = async (req, res) => {
             return res.status(400).json({success: false, message: "User already exists"})
         }
 
+        // password encoding
         const hashedPassword = await bcryptjs.hash(password, 12);
 
         const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
@@ -51,9 +54,11 @@ export const signup = async (req, res) => {
         })
 
     } catch (error) {
+        console.log("error during singup", error);
         res.status(400).json({success: false, message: error.message});
     }
 }
+
 
 export const verifyEmail = async (req, res) => {
     const {code} = req.body;
@@ -94,12 +99,82 @@ export const verifyEmail = async (req, res) => {
     }
 }
 
+
 export const login = async (req, res) => {
-    res.send("login Route")
+    const {email, password} = req.body;
+    try {
+        const user = await UserModel.findOne({email})
+
+        if(!user){
+            return res.status(400).json({success: false, message: "Invalid credentials"})
+        }
+        
+        // decoding the password
+        const isPassswordValid = await bcryptjs.compare(password, user.password);
+
+        console.log(isPassswordValid)
+        
+        if(!isPassswordValid){
+            return res.status(400).json({success: false, message: "Invalid credentials"})
+        }
+
+        // jwt creation
+        generateTokenAndSetCookie(res, user._id, user.name);
+
+        // update the login date
+        user.lastLogin = new Date();
+
+        await user.save();
+
+        // send data to client
+        res.status(200).json({
+            success: true,
+            message: "Loggen in successfully",
+            user: {
+                ...user._doc,
+                password: undefined
+            }
+        })        
+    } catch (error) {
+        console.log("error in login", error);
+        res.status(400).json({success: false, message: error.message});  
+    }
 }
 
 
 export const logout = async (req, res) => {
-    res.send("logout Route")
+    res.clearCookie("token");
+    res.status(200).json({success: true, message: "Logged out successfully"})
 }
+
+export const forgotPassword = async (req, res) => {
+    const {email} = req.body;
+
+    try {
+        const user = await UserModel.findOne({email});
+
+        if(!user){
+            return res.status(400).json({success: false, message: "User doesn't exist on this email"})
+        }
+
+        // generate reset token
+        const resetToken = crypto.randomBytes(20).toString("hex");
+        const resetTokenExpiresAt = Date.now() + 1*60*60*1000; // +1 hour
+
+        user.resetPasswordToken = resetToken;
+        user.resetPasswordExpiresAt = resetTokenExpiresAt
+
+        await user.save();
+
+        // send email
+        await sendPasswordResetEmail(user.email, `${process.env.CLIENT_URL}/reset-password/${resetToken}`);
+
+        res.status(200).json({success: true, message: "password reset link sent to your email"})
+
+    } catch (error) {
+        console.log("error in forgotPassword", error);
+        res.status(400).json({success: false, message: error.message});   
+    }
+}
+
 
