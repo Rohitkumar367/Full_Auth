@@ -5,7 +5,7 @@ import bcryptjs from 'bcryptjs'
 import crypto from 'crypto'
 import dotenv from 'dotenv'
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
-import { sendPasswordResetEmail, sendVerificationEmail, sendWelcomeEmail } from "../nodemailer/emails.js";
+import { sendPasswordResetEmail, sendResetSuccessEmail, sendVerificationEmail, sendWelcomeEmail } from "../nodemailer/emails.js";
 dotenv.config();
 
 export const signup = async (req, res) => {
@@ -111,8 +111,6 @@ export const login = async (req, res) => {
         
         // decoding the password
         const isPassswordValid = await bcryptjs.compare(password, user.password);
-
-        console.log(isPassswordValid)
         
         if(!isPassswordValid){
             return res.status(400).json({success: false, message: "Invalid credentials"})
@@ -177,4 +175,37 @@ export const forgotPassword = async (req, res) => {
     }
 }
 
+
+export const resetPassword = async (req, res) => {
+    try {
+        const {token} = req.params;
+        const {password} = req.body;
+
+        const user = await UserModel.findOne({
+            resetPasswordToken: token,
+            resetPasswordExpiresAt: {$gt: Date.now()}
+        })
+
+        if(!user){
+            return res.status(400).json({success: false, message: "Invalid or expired reset token"})
+        }
+
+        // update password
+        const hashedPassword = await bcryptjs.hash(password, 10);
+
+        user.password = hashedPassword;
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpiresAt = undefined;
+
+        await user.save();
+
+        await sendResetSuccessEmail(user.email);
+
+        res.status(200).json({success: true, message: "password reset successfully"})
+
+    } catch (error) {
+        console.log("error in password reset", error);
+        res.status(400).json({success: false, message: error.message});   
+    }
+}
 

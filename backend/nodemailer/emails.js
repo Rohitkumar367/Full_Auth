@@ -1,7 +1,7 @@
 
 import createTransporter from "./nodemailerConfig.js";
 import dotenv from 'dotenv'
-import { PASSWORD_RESET_REQUEST_TEMPLATE, VERIFICATION_EMAIL_TEMPLATE, WELCOME_EMAIL_TEMPLATE } from "./emailTemplates.js";
+import { PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE, VERIFICATION_EMAIL_TEMPLATE, WELCOME_EMAIL_TEMPLATE } from "./emailTemplates.js";
 dotenv.config();
 
 export const sendVerificationEmail =  async (userEmail, verificationToken) =>{
@@ -79,11 +79,39 @@ export const sendPasswordResetEmail = async (userEmail, resetUrl) => {
                 return process.exit(1);
             }
     
-            console.log('Password reset email send successfully', info.messageId);
+            console.log('password reset email send successfully', info.messageId);
         });
     } catch (error) {
         console.log("Error sending password reset email", error);
         throw new Error(`Error sending password reset email: ${error}`)
+    }
+}
+
+
+export const sendResetSuccessEmail = async (userEmail) => {
+
+    const transporter = await createTransporter();
+
+    try {
+        let message = {
+            from: process.env.EMAIL,
+            to: userEmail,
+            subject: 'Password Reset Successfyl',
+            text: 'Hello Sir!',
+            html: PASSWORD_RESET_SUCCESS_TEMPLATE
+        };
+    
+        transporter.sendMail(message, (err, info) => {
+            if (err) {
+                console.log('Error occurred. ' + err.message);
+                return process.exit(1);
+            }
+    
+            console.log('password reset success email send successfully', info.messageId);
+        });
+    } catch (error) {
+        console.log("Error sending password reset success email", error);
+        throw new Error(`Error sending password reset success email: ${error}`)
     }
 }
 
