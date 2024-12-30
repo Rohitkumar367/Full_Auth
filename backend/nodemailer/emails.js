@@ -96,7 +96,7 @@ export const sendResetSuccessEmail = async (userEmail) => {
         let message = {
             from: process.env.EMAIL,
             to: userEmail,
-            subject: 'Password Reset Successfyl',
+            subject: 'Password Reset successful',
             text: 'Hello Sir!',
             html: PASSWORD_RESET_SUCCESS_TEMPLATE
         };

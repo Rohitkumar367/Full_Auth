@@ -145,6 +145,7 @@ export const logout = async (req, res) => {
     res.status(200).json({success: true, message: "Logged out successfully"})
 }
 
+
 export const forgotPassword = async (req, res) => {
     const {email} = req.body;
 
@@ -208,4 +209,22 @@ export const resetPassword = async (req, res) => {
         res.status(400).json({success: false, message: error.message});   
     }
 }
+
+
+export const checkAuth = async (req, res) => {
+    try {
+        const user = await UserModel.findById(req.userId).select("-password");
+
+        if(!user){
+            return res.status(400).json({success: false, message: "User not found"});
+        }
+
+        res.status(200).json({success: true, user})
+
+    } catch (error) {
+        console.log("Error in checkAuth", error);
+        res.status(400).json({success: false, message: error.message});
+    }
+}
+
 
