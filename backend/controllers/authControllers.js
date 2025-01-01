@@ -9,6 +9,7 @@ import { sendPasswordResetEmail, sendResetSuccessEmail, sendVerificationEmail, s
 dotenv.config();
 
 export const signup = async (req, res) => {
+
     const {email, password, name} = req.body;
 
     try {
@@ -61,6 +62,7 @@ export const signup = async (req, res) => {
 
 
 export const verifyEmail = async (req, res) => {
+
     const {code} = req.body;
 
     try {
@@ -115,7 +117,7 @@ export const login = async (req, res) => {
         if(!isPassswordValid){
             return res.status(400).json({success: false, message: "Invalid credentials"})
         }
-
+ 
         // jwt creation
         generateTokenAndSetCookie(res, user._id, user.name);
 
@@ -219,7 +221,10 @@ export const checkAuth = async (req, res) => {
             return res.status(400).json({success: false, message: "User not found"});
         }
 
-        res.status(200).json({success: true, user})
+        res.status(200).json({
+            success: true, 
+            user
+        })
 
     } catch (error) {
         console.log("Error in checkAuth", error);

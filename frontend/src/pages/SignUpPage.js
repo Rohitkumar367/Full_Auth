@@ -17,7 +17,6 @@ const SignUpPage = () => {
 
     const handleSigup = async (e) =>{
         e.preventDefault();
-
         try {
             await signup(email, password, name);
             navigate("/verify-email")
@@ -75,7 +74,7 @@ const SignUpPage = () => {
                         whileHover={{scale: 1.02}}
                         whileTap={{scale: 0.98}}
                         type='submit'
-                        disabled={isLoading}
+                        disabled={isLoading} //disabled means non clickable
                     >
                         {isLoading ? <Loader className='animate-spin mx-auto' size={24}/>:"Sign Up"}
                     </motion.button>
