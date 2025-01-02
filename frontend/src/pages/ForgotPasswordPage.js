@@ -67,6 +67,7 @@ const ForgotPasswordPage = () => {
 						</p>
 					</div>
 				)}
+				
 			</div>
 
 			<div className='px-8 py-4 bg-gray-900 bg-opacity-50 flex justify-center'>

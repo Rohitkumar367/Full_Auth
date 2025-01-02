@@ -2,7 +2,6 @@ import React from 'react'
 import {motion} from 'framer-motion'
 import { useAuthStore } from '../store/authStore'
 import { formatDate } from '../utils/utils';
-import { Navigate, replace } from 'react-router-dom';
 
 const DashboardPage = () => {
 
